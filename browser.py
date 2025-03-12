@@ -9,6 +9,7 @@ from logger import Logger
 class Browser(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.last_pasted = ""
 
         self.setWindowTitle("Modular Browser")
         self.resize(1024, 768)
@@ -36,16 +37,12 @@ class Browser(QMainWindow):
         QApplication.instance().installEventFilter(self)
 
     def eventFilter(self, obj, event):
-        last_pasted = ""
-        """
-        Captures Ctrl + V (paste) anywhere in the application.
-        """
         if isinstance(event, QKeyEvent):  # Ensure it's a key event
             if event.key() == Qt.Key_V and event.modifiers() & Qt.ControlModifier:
                 pasted_text = QApplication.clipboard().text()  # Get clipboard content
-                if pasted_text == last_pasted:
+                if pasted_text != self.last_pasted:
                     self.logger.log_paste(pasted_text)  # Log the pasted content
-                    last_pasted = pasted_text
+                    self.last_pasted = pasted_text
         return super().eventFilter(obj, event)  # Pass event to default handler
 
     def add_new_tab_button(self):

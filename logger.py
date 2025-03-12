@@ -3,7 +3,7 @@ import json
 
 class Logger:
     def __init__(self):
-        self.log_file = "browser_logs.txt"
+        self.log_file = "browser_logs.json"
 
     def log_paste(self, shortcut):
         data = {
@@ -12,7 +12,7 @@ class Logger:
         }
         jsondata = json.dumps(data, indent=4)
         with open(self.log_file, "a") as f:
-            f.write(jsondata)
+            f.write(jsondata + ", \n")
         print(jsondata.__str__())
 
     def log_navigation(self, url):
@@ -22,7 +22,7 @@ class Logger:
         }
         jsondata = json.dumps(data, indent=4)
         with open(self.log_file, "a") as f:
-            f.write(jsondata)
+            f.write(jsondata + ", \n")
         print(jsondata.__str__())
 
     def log_download(self, download_item):
@@ -32,5 +32,5 @@ class Logger:
         }
         jsondata = json.dumps(data, indent=4)
         with open(self.log_file, "a") as f:
-            f.write(jsondata)
+            f.write(jsondata + ", \n")
         print(jsondata.__str__())
