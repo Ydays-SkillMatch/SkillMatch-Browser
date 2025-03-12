@@ -14,36 +14,31 @@ class Browser(QMainWindow):
         self.setWindowTitle("Modular Browser")
         self.resize(1024, 768)
 
-        # Initialize tab widget for multiple tabs
         self.tabs = QTabWidget()
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
 
-        # Add "New Tab" button
         self.add_new_tab_button()
 
         self.setCentralWidget(self.tabs)
 
-        # Initialize Logger
         self.logger = Logger()
 
-        # Initialize Controls and attach toolbar
         self.controls = Controls(main_window=self)
         self.addToolBar(self.controls.toolbar)
 
-        # Add the first tab
         self.add_new_tab("https://www.google.com", "New Tab")
 
         QApplication.instance().installEventFilter(self)
 
     def eventFilter(self, obj, event):
-        if isinstance(event, QKeyEvent):  # Ensure it's a key event
+        if isinstance(event, QKeyEvent):
             if event.key() == Qt.Key_V and event.modifiers() & Qt.ControlModifier:
-                pasted_text = QApplication.clipboard().text()  # Get clipboard content
+                pasted_text = QApplication.clipboard().text()
                 if pasted_text != self.last_pasted:
-                    self.logger.log_paste(pasted_text)  # Log the pasted content
+                    self.logger.log_paste(pasted_text)
                     self.last_pasted = pasted_text
-        return super().eventFilter(obj, event)  # Pass event to default handler
+        return super().eventFilter(obj, event)
 
     def add_new_tab_button(self):
         new_tab_button = QToolButton()
@@ -56,22 +51,23 @@ class Browser(QMainWindow):
         browser = QWebEngineView()
         browser.setUrl(QUrl(url))
 
-        # Connect URL changes to update the URL bar and log navigation
+        browser.titleChanged.connect(lambda title, browser=browser: self.update_tab_title(title, browser))
         browser.urlChanged.connect(lambda url, browser=browser: self.logger.log_navigation(url.toString()))
         browser.urlChanged.connect(lambda url, browser=browser: self.update_url_bar(url, browser))
 
-        # Add new tab to the tab widget
         index = self.tabs.addTab(browser, label)
         self.tabs.setCurrentIndex(index)
 
+    def update_tab_title(self, title, browser):
+        index = self.tabs.indexOf(browser)
+        if index != -1: 
+            self.tabs.setTabText(index, title)
+
     def update_url_bar(self, url, browser):
-        """
-        Updates the URL bar with the current page URL.
-        """
         if browser == self.current_browser():
             formatted_url = url.toString()
             if formatted_url.startswith("https://"):
-                formatted_url = formatted_url.replace("https://", "")  # Keep it clean in the bar
+                formatted_url = formatted_url.replace("https://", "")
             elif formatted_url.startswith("http://"):
                 formatted_url = formatted_url.replace("http://", "")
             self.controls.update_url_bar(formatted_url)
