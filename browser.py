@@ -8,8 +8,10 @@ from utils import is_blocked_url
 
 
 class Browser(QMainWindow):
-    def __init__(self):
+    def __init__(self, user_id, access_token):
         super().__init__()
+        self.user_id = user_id
+        self.access_token = access_token
         self.last_pasted = ""
 
         self.setWindowTitle("Modular Browser")
@@ -23,7 +25,7 @@ class Browser(QMainWindow):
 
         self.setCentralWidget(self.tabs)
 
-        self.logger = Logger()
+        self.logger = Logger(user_id=user_id, access_token=access_token)
 
         self.controls = Controls(main_window=self)
         self.addToolBar(self.controls.toolbar)

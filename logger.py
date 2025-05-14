@@ -4,16 +4,18 @@ import json
 import requests
 
 class Logger:
-    def __init__(self):
+    def __init__(self, user_id, access_token):
+        self.user_id = user_id
+        self.access_token = access_token
         self.log_file = "browser_logs.json"
         self.logs = self.load_logs()
 
     def send_request(self, data):
         with open(self.log_file, "w") as file:
             json.dump(self.logs, file, indent=4)
-        
-        r = requests.post(url="http://localhost:8080/api/navdata/", data=data)
-        print(r.text)
+
+        r = requests.post(url="http://localhost:8080/api/navdata/", headers={"Content-Type": "application/json"}, data=json.dumps(data))
+        print(f"🔄 Received response: {r.status_code}")
 
 
     def load_logs(self):
@@ -27,7 +29,7 @@ class Logger:
             "type": "pasted_data",
             "data": shortcut,
             "user": {
-                "id": 1,
+                "id": self.user_id,
             },
             "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
@@ -39,7 +41,7 @@ class Logger:
             "type": "url",
             "data": url,
             "user": {
-                "id": 1,
+                "id": self.user_id,
             },
             "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
@@ -51,7 +53,7 @@ class Logger:
             "type": "download",
             "data": download_item.url().toString(),
             "user": {
-                "id": 1,
+                "id": self.user_id,
             },
             "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
