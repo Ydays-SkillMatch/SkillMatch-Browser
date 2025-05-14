@@ -1,15 +1,20 @@
 import datetime
 import os
 import json
+import requests
 
 class Logger:
     def __init__(self):
         self.log_file = "browser_logs.json"
         self.logs = self.load_logs()
 
-    def save_logs(self):
+    def send_request(self, data):
         with open(self.log_file, "w") as file:
             json.dump(self.logs, file, indent=4)
+        
+        r = requests.post(url="http://localhost:8080/api/navdata/", data=data)
+        print(r.text)
+
 
     def load_logs(self):
         if os.path.exists(self.log_file):
@@ -19,24 +24,36 @@ class Logger:
 
     def log_paste(self, shortcut):
         data = {
-            "pasted_data": shortcut,
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+            "type": "pasted_data",
+            "data": shortcut,
+            "user": {
+                "id": 1,
+            },
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
         self.logs.append(data)
-        self.save_logs()
+        self.send_request(data=data)
 
     def log_navigation(self, url):
         data = {
-            "url": url,
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+            "type": "url",
+            "data": url,
+            "user": {
+                "id": 1,
+            },
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
         self.logs.append(data)
-        self.save_logs()
+        self.send_request(data=data)
 
     def log_download(self, download_item):
         data = {
-            "download": download_item.url().toString(),
-            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+            "type": "download",
+            "data": download_item.url().toString(),
+            "user": {
+                "id": 1,
+            },
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp()
         }
         self.logs.append(data)
-        self.save_logs()
+        self.send_request(data=data)

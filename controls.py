@@ -29,10 +29,10 @@ class Controls:
         self.url_bar.returnPressed.connect(self.navigate_to_url)
         self.toolbar.addWidget(self.url_bar)
         
-        favorite_button = QPushButton("★")
-        favorite_button.setToolTip("Add to Favorites")
-        favorite_button.clicked.connect(self.add_to_favorites)
-        self.toolbar.addWidget(favorite_button)
+        self.favorite_button = QPushButton("☆") 
+        self.favorite_button.setToolTip("Add to Favorites")
+        self.favorite_button.clicked.connect(self.toggle_favorite)
+        self.toolbar.addWidget(self.favorite_button)
 
         self.favorites_menu = QMenu("Favorites", main_window)
         favorites_button = QPushButton("📂") 
@@ -66,13 +66,30 @@ class Controls:
         if self.main_window.current_browser():
             self.main_window.current_browser().reload()
 
-    def add_to_favorites(self):
+    def toggle_favorite(self):
         browser = self.main_window.current_browser()
         if browser:
             url = browser.url().toString()
             title = browser.page().title()
-            self.favorites_manager.add_favorite(title, url)
-            self.load_favorites_menu()  # Update the menu
+
+            if self.favorites_manager.is_favorite(url):
+                self.favorites_manager.remove_favorite(url) 
+                self.favorite_button.setText("☆")  
+                self.favorite_button.setToolTip("Add to Favorites")
+            else:
+                self.favorites_manager.add_favorite(title, url)  
+                self.favorite_button.setText("★")  
+                self.favorite_button.setToolTip("Remove from Favorites")
+
+            self.load_favorites_menu()
+
+    def update_favorite_button(self, url):
+        if self.favorites_manager.is_favorite(url):
+            self.favorite_button.setText("★")  
+            self.favorite_button.setToolTip("Remove from Favorites")
+        else:
+            self.favorite_button.setText("☆")  
+            self.favorite_button.setToolTip("Add to Favorites")
 
     def load_favorites_menu(self):
         self.favorites_menu.clear()
@@ -85,7 +102,3 @@ class Controls:
         browser = self.main_window.current_browser()
         if browser:
             browser.setUrl(validate_url(url))
-
-    def remove_favorite(self, url):
-        self.favorites_manager.remove_favorite(url)
-        self.load_favorites_menu() 

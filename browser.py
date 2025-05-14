@@ -4,6 +4,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtGui import QKeyEvent
 from controls import Controls
 from logger import Logger
+from utils import is_blocked_url
 
 
 class Browser(QMainWindow):
@@ -51,12 +52,17 @@ class Browser(QMainWindow):
         browser = QWebEngineView()
         browser.setUrl(QUrl(url))
 
+        browser.urlChanged.connect(lambda url, browser=browser: self.check_blocked_url(url, browser))
         browser.titleChanged.connect(lambda title, browser=browser: self.update_tab_title(title, browser))
         browser.urlChanged.connect(lambda url, browser=browser: self.logger.log_navigation(url.toString()))
         browser.urlChanged.connect(lambda url, browser=browser: self.update_url_bar(url, browser))
 
         index = self.tabs.addTab(browser, label)
         self.tabs.setCurrentIndex(index)
+
+    def check_blocked_url(self, url, browser):
+        if is_blocked_url(url.toString()):
+            browser.setUrl(QUrl("about:blank")) 
 
     def update_tab_title(self, title, browser):
         index = self.tabs.indexOf(browser)
@@ -82,4 +88,3 @@ class Browser(QMainWindow):
     
     def open_new_tab(self):
         self.add_new_tab("https://www.google.com", "New Tab")
-

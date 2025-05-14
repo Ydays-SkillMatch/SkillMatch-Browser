@@ -27,3 +27,6 @@ class Favorites:
 
     def get_favorites(self):
         return self.favorites
+    
+    def is_favorite(self, url):
+        return any(fav["url"] == url for fav in self.favorites)
