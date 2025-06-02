@@ -1,6 +1,8 @@
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QToolButton, QApplication
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings 
+from PyQt5.QtWebEngineCore import QWebEngineCookieStore
+from PyQt5.QtNetwork import QNetworkCookie
 from PyQt5.QtGui import QKeyEvent
 from controls import Controls
 from logger import Logger
@@ -30,7 +32,7 @@ class Browser(QMainWindow):
         self.controls = Controls(main_window=self)
         self.addToolBar(self.controls.toolbar)
 
-        self.add_new_tab("https://www.google.com", "New Tab")
+        self.add_new_tab("https://www.google.com", "SkillMatch")
 
         QApplication.instance().installEventFilter(self)
 
@@ -52,7 +54,24 @@ class Browser(QMainWindow):
 
     def add_new_tab(self, url, label):
         browser = QWebEngineView()
+        browser.settings().setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
+        browser.settings().setAttribute(QWebEngineSettings.LocalContentCanAccessFileUrls, True)
+        browser.settings().setAttribute(QWebEngineSettings.JavascriptEnabled, True)
         browser.setUrl(QUrl(url))
+        # profile = browser.page().profile()
+        # cookie_store = profile.cookieStore()
+        
+        # cookie = QNetworkCookie()
+        # cookie.setName(b"SkillMatchToken")
+        # cookie.setValue(self.access_token.encode()) 
+        # cookie.setDomain("localhost") 
+        # cookie.setPath("/")
+        # cookie.setHttpOnly(True)
+        # cookie.setSecure(False) 
+
+        # cookie_store.setCookie(cookie, QUrl("https://skillmatch.albanagisa.fr"))
+        
+        
 
         browser.urlChanged.connect(lambda url, browser=browser: self.check_blocked_url(url, browser))
         browser.titleChanged.connect(lambda title, browser=browser: self.update_tab_title(title, browser))

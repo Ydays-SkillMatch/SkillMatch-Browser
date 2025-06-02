@@ -4,7 +4,7 @@ import re
 BLOCKED_URLS = [
     "https://chrome.google.com/webstore",
     "https://microsoftedge.microsoft.com/addons",
-    "https://addons.mozilla.org"
+    "https://addons.mozilla.org",
     "chromewebstore.google.com"
 ]
 

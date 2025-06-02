@@ -14,7 +14,7 @@ class Logger:
         with open(self.log_file, "w") as file:
             json.dump(self.logs, file, indent=4)
 
-        r = requests.post(url="http://localhost:8080/api/navdata/", headers={"Content-Type": "application/json"}, data=json.dumps(data))
+        r = requests.post(url="https://skillmatch-api.albanagisa.fr/api/navdata/", headers={"Content-Type": "application/json"}, data=json.dumps(data))
         print(f"🔄 Received response: {r.status_code}")
 
 

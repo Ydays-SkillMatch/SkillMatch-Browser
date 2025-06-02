@@ -3,8 +3,8 @@ import json
 
 class AuthManager:
     def __init__(self):
-        self.login_url = "http://localhost:8080/api/auth/login/"
-        self.refresh_url = "http://localhost:8080/api/auth/refresh/"
+        self.login_url = "https://skillmatch-api.albanagisa.fr/api/auth/login/"
+        self.refresh_url = "https://skillmatch-api.albanagisa.fr/api/auth/refresh/"
         self.access_token = None
         self.refresh_token = None
         self.id = None
